@@ -1,158 +1,118 @@
-import 'package:toritora/common/repositories/get_routes/get_routes.dart';
-import 'package:toritora/features/home/data/models/get_all_models.dart';
-import 'package:toritora/features/home/data/models/get_available_models.dart';
-import 'package:toritora/features/home/data/models/new_models.dart';
+// import 'dart:html';
+import 'dart:io';
 
-import '../../../../exports.dart';
-import '../../home_visitor/data/models/get_banners.dart' as banners;
-import '../data/models/get_model_details.dart' as md;
-import '../data/models/get_model_details.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:toritora/exports.dart';
 
-final homeControllerProvider =
-    StateNotifierProvider<HomeController, bool>((ref) {
-  return HomeController(true);
-});
-
-class HomeController extends StateNotifier<bool> {
-  HomeController(super.state);
-
-  int id = -1;
-
-  void changeId(newId) {
-    id = newId;
-  }
-
-  /// --------------------------- change function is for changing the model and kikaku buttons -----------------
-  void change(bool value) {
-    state = value;
-  }
+class UploadedImageView extends StatefulWidget {
+  UploadedImageView(
+      {super.key,
+      required this.index,
+      required this.selectImageGenre1,
+      required this.image});
+  final int index;
+  final Function selectImageGenre1;
+  String? image;
+  @override
+  State<UploadedImageView> createState() => _UploadedImageViewState();
 }
 
-/// --------------------------- Home screen api methods and other methods  -----------------
-
-final homeControllerMethodsProvider =
-    ChangeNotifierProvider<HomeControllerMethods>((ref) {
-  return HomeControllerMethods();
-});
-
-class HomeControllerMethods extends ChangeNotifier {
-  var isLoading = false;
-  final GetRoutes _getRoutes = GetRoutes();
-
-  AllModels? _getAllModels;
-  get getAllModels => _getAllModels!;
-  List<User> _getAllModelsList = [];
-  List<User> get getAllModelsList => _getAllModelsList;
-
-  NewModels? _newModels;
-  get newModels => _newModels!;
-  List<NewModel> _newModelsList = [];
-  List<NewModel> get newModelsList => _newModelsList;
-
-  ModelDetails? _modelDetails;
-  get modelDetails => _modelDetails!;
-  md.Data _modelDetailsData = md.Data(
-      user: md.Model(
-          height: -1,
-          address: '',
-          twitterUserName: '',
-          instagramUserName: '',
-          experience: -1,
-          userName: '',
-          id: -1,
-          isEmailVerified: false,
-          isVerified: false,
-          isMobileVerified: false));
-  md.Data get modelDetailsData => _modelDetailsData;
-
-  banners.BannerModels? _bannerModels;
-  get getBannerModels => _bannerModels;
-  List<banners.Datum> _bannerModelsList = [];
-  List<banners.Datum> _bannerKikakuList = [];
-  List<banners.Datum> get bannerModelsList => _bannerModelsList;
-  List<banners.Datum> get bannerKikakuList => _bannerKikakuList;
-
-  AvailableModels? _availableModels;
-  get availableModels => _availableModels!;
-  List<AvailableModel> _availableModelsList = [];
-  List<AvailableModel> get availableModelsList => _availableModelsList;
-
-  getAllModelsApi() async {
-    isLoading = true;
-    notifyListeners();
-    _getAllModels = await _getRoutes.getAllModels();
-    if (_getAllModels!.data.users.isNotEmpty) {
-      isLoading = false;
-      notifyListeners();
-      _getAllModelsList = _getAllModels!.data.users;
-      notifyListeners();
-    } else {
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  getNewModelsApi() async {
-    isLoading = true;
-    notifyListeners();
-    _newModels = await _getRoutes.getNewModels();
-    if (_newModels!.data.newModels.isNotEmpty) {
-      isLoading = false;
-      notifyListeners();
-      _newModelsList = _newModels!.data.newModels;
-      notifyListeners();
-    } else {
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  getModelDetailsApi(int id) async {
-    isLoading = true;
-    notifyListeners();
-    _modelDetails = await _getRoutes
-        .getModelDetails(1); // asking for a default id .... for testing....
-    print('...............................................${_modelDetails?.data.user.instagramUserName}');
-    if (_modelDetails!.data.user.userName.isNotEmpty) {
-      isLoading = false;
-      notifyListeners();
-      _modelDetailsData = _modelDetails!.data;
-      print("isinya apa ${_modelDetailsData.user.instagramUserName}");
-      notifyListeners();
-    } else {
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  getBannersApi() async {
-    isLoading = true;
-    notifyListeners();
-    _bannerModels = await _getRoutes.getBanners();
-    if (_bannerModels!.data.isNotEmpty) {
-      isLoading = false;
-      notifyListeners();
-      _bannerModelsList = _bannerModels!.getBannersForModel;
-      _bannerKikakuList = _bannerModels!.getBannersForKikaku;
-      notifyListeners();
-    } else {
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  getAvailableModelsApi() async {
-    isLoading = true;
-    notifyListeners();
-    _availableModels = await _getRoutes.getAvailableModels();
-    if (_availableModels!.data.availableModels.isNotEmpty) {
-      isLoading = false;
-      notifyListeners();
-      _availableModelsList = _availableModels!.data.availableModels;
-      notifyListeners();
-    } else {
-      isLoading = false;
-      notifyListeners();
-    }
+class _UploadedImageViewState extends State<UploadedImageView> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: getPadding(
+        // left: 8,
+        top: 11,
+        // right: 8,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 3,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  widget.selectImageGenre1(widget.index);
+                });
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.24,
+                height: MediaQuery.of(context).size.width * 0.24,
+                padding: widget.image == null
+                    ? getPadding(
+                        left: 30,
+                        top: 31,
+                        right: 30,
+                        bottom: 31,
+                      )
+                    : const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: KColor.blueGray10001,
+                    width: getHorizontalSize(1),
+                  ),
+                  borderRadius: BorderRadius.circular(getHorizontalSize(4)),
+                  // image: selectedImageGenre1 != null
+                  //     ? DecorationImage(
+                  //         image: FileImage(File(selectedImageGenre1!)),// may be not working.....
+                  //         fit: BoxFit.cover,
+                  //       )
+                  //     : null,
+                ),
+                child: widget.image == null
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              "+",
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.left,
+                              style: widget.image == null
+                                  ? AppStyle.txtPoppinsRegular1531
+                                  : AppStyle.txtPoppinsRegular1531Black,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: getPadding(top: 2, bottom: 4),
+                              child: Text(
+                                "Add Image",
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: widget.image == null
+                                    ? AppStyle.txtPoppinsRegular8
+                                    : AppStyle.txtPoppinsRegular8Black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Image.file(File(widget.image!), fit: BoxFit.fill),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: CustomButton(
+              height: getVerticalSize(25),
+              width: getHorizontalSize(105),
+              text: "Select Genre",
+              margin: getMargin(top: 6),
+              variant: ButtonVariant.OutlineOrange400,
+              shape: ButtonShape.RoundedBorder3,
+              padding: ButtonPadding.PaddingAll5,
+              fontStyle: ButtonFontStyle.PoppinsMedium10,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
